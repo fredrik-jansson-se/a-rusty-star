@@ -4,10 +4,23 @@ use std::cmp::Eq;
 use std::cmp::Ordering;
 
 pub trait AStar<Node: Clone + Eq + Hash> {
-    fn heuristic_cost_estimate(&self, from: &Node, to: &Node) -> f64;
-    fn neighbors(&self, n: &Node) -> Vec<Node>;
-    fn distance_between(&self, a: &Node, b: &Node) -> f64;
+    /// This function should return the heuristic distance between
+    /// a node a the goal.
+    fn heuristic_cost_estimate(&self, from: &Node, goal: &Node) -> f32;
 
+    // Returns all valid neighbors of the given node.
+    fn neighbors(&self, n: &Node) -> Vec<Node>;
+
+    // Return the distance between two nodes
+    fn distance_between(&self, a: &Node, b: &Node) -> f32;
+
+    ///
+    /// This function is called to try to solve the shortest path between
+    /// start and goal.
+    ///
+    /// Please see the tests for some simple examples.
+    ///
+    ///
     fn solve(&self, start: &Node, goal: &Node) -> Option<Vec<Node>> {
         let mut closed_set = HashSet::new();
 
@@ -25,8 +38,8 @@ pub trait AStar<Node: Clone + Eq + Hash> {
 
         while !open_set.is_empty() {
             let current = open_set.iter().min_by(|c1,c2| {
-                let f1 : f64 = get_score(&f_score, c1);
-                let f2 : f64 = get_score(&f_score, c2);
+                let f1 : f32 = get_score(&f_score, c1);
+                let f2 : f32 = get_score(&f_score, c2);
                 if f1 < f2 {
                     Ordering::Less
                 }
@@ -92,11 +105,11 @@ fn reconstruct_path<Node>(came_from: &HashMap<Node, Node>, current: &Node) -> Ve
     total_path
 }
 
-fn get_score<N: Hash+Eq>(m: &HashMap<N, f64>, k: &N) -> f64 
+fn get_score<N: Hash+Eq>(m: &HashMap<N, f32>, k: &N) -> f32 
 {
     match m.get(k) {
         Some(v) => *v,
-        None => std::f64::MAX
+        None => std::f32::MAX
     }
 }
 
@@ -137,13 +150,13 @@ mod tests {
     }
 
     impl AStar<Coord> for CoordAStar {
-        fn heuristic_cost_estimate(&self, from: &Coord, to: &Coord) -> f64 {
-            self.distance_between(from, to)
+        fn heuristic_cost_estimate(&self, from: &Coord, goal: &Coord) -> f32 {
+            self.distance_between(from, goal)
         }
 
-        fn distance_between(&self, from: &Coord, to: &Coord) -> f64 {
-            let dx = (to.x - from.x) as f64;
-            let dy = (to.y - from.y) as f64;
+        fn distance_between(&self, from: &Coord, to: &Coord) -> f32 {
+            let dx = (to.x - from.x) as f32;
+            let dy = (to.y - from.y) as f32;
             (dx * dx + dy * dy).sqrt()
         }
 
@@ -164,13 +177,13 @@ mod tests {
     }
 
     impl AStar<Coord> for CoordAStar2 {
-        fn heuristic_cost_estimate(&self, from: &Coord, to: &Coord) -> f64 {
-            self.distance_between(from, to)
+        fn heuristic_cost_estimate(&self, from: &Coord, goal: &Coord) -> f32 {
+            self.distance_between(from, goal)
         }
 
-        fn distance_between(&self, from: &Coord, to: &Coord) -> f64 {
-            let dx = (to.x - from.x) as f64;
-            let dy = (to.y - from.y) as f64;
+        fn distance_between(&self, from: &Coord, to: &Coord) -> f32 {
+            let dx = (to.x - from.x) as f32;
+            let dy = (to.y - from.y) as f32;
             (dx * dx + dy * dy).sqrt()
         }
 
