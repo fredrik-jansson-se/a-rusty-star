@@ -3,15 +3,19 @@ use std::hash::Hash;
 use std::cmp::Eq;
 use std::cmp::Ordering;
 
+///
+/// Implement this trait for your node type. Then call solve to try to find
+/// an optimal path between two nodes.
+///
 pub trait AStar<Node: Clone + Eq + Hash> {
     /// This function should return the heuristic distance between
-    /// a node a the goal.
+    /// a node and the goal.
     fn heuristic_cost_estimate(&self, from: &Node, goal: &Node) -> f32;
 
-    // Returns all valid neighbors of the given node.
+    /// Returns all valid neighbors of the given node.
     fn neighbors(&self, n: &Node) -> Vec<Node>;
 
-    // Return the distance between two nodes
+    /// Return the distance between two nodes.
     fn distance_between(&self, a: &Node, b: &Node) -> f32;
 
     ///
@@ -40,15 +44,7 @@ pub trait AStar<Node: Clone + Eq + Hash> {
             let current = open_set.iter().min_by(|c1,c2| {
                 let f1 : f32 = get_score(&f_score, c1);
                 let f2 : f32 = get_score(&f_score, c2);
-                if f1 < f2 {
-                    Ordering::Less
-                }
-                else if f1 == f2 {
-                    Ordering::Equal
-                }
-                else {
-                    Ordering::Greater
-                }
+                f1.partial_cmp(&f2).unwrap_or(Ordering::Equal)
             }).unwrap().clone();
 
             if current == *goal {
