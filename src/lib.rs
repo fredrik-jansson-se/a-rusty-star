@@ -4,9 +4,7 @@ use std::cmp::Eq;
 use std::cmp::Ordering;
 
 ///
-/// Implement this trait for your node type. 
-///
-/// Call solve to try to find an optimal path between two nodes.
+/// Implement to solve to try to find an optimal path between two nodes using A*.
 ///
 /// # Examples
 /// ``` 

@@ -1,6 +1,9 @@
 [package]
 name = "astar"
+license = "MIT"
+description = "Library for the A* (A star) search algorithm"
 version = "0.1.0"
 authors = ["Fredrik Jansson <frjansso@cisco.com>"]
+repository = "https://github.com/fredrik-jansson-se/a-rusty-star"
 
 [dependencies]
