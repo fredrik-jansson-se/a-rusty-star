@@ -4,9 +4,72 @@ use std::cmp::Eq;
 use std::cmp::Ordering;
 
 ///
-/// Implement this trait for your node type. Then call solve to try to find
-/// an optimal path between two nodes.
+/// Implement this trait for your node type. 
 ///
+/// Call solve to try to find an optimal path between two nodes.
+///
+/// # Examples
+/// ``` 
+/// use std::ops::Add;
+/// use astar::*;
+///
+/// #[derive(Debug, Clone, Hash, PartialEq, Eq)]
+/// struct Coord {
+///    x: i32,
+///    y: i32
+/// }
+///
+/// impl Coord {
+///     fn new(x: i32, y: i32) -> Coord {
+///         Coord {x: x, y: y}
+///     }
+/// }
+///
+/// // Helper to simplify neighbor generation
+/// impl Add for Coord {
+///     type Output = Coord;
+///     fn add(self, rhs: Coord) -> Coord {
+///         Coord {
+///             x: self.x + rhs.x,
+///             y: self.y + rhs.y,
+///         }
+///     }
+/// }
+///
+/// struct MyWorld {
+/// }
+///
+/// impl AStar<Coord> for MyWorld {
+///     fn heuristic_cost_estimate(&self, from: &Coord, goal: &Coord) -> f32 {
+///         self.distance_between(from, goal)
+///     }
+
+///     fn distance_between(&self, from: &Coord, to: &Coord) -> f32 {
+///         let dx = (to.x - from.x) as f32;
+///         let dy = (to.y - from.y) as f32;
+///         (dx * dx + dy * dy).sqrt()
+///     }
+
+///     fn neighbors(&self, n: &Coord) -> Vec<Coord> {
+///         let mut nbrs = vec!{};
+///
+///         // Add all neighbors
+///         nbrs.push(n.clone() + Coord::new(0, 1));
+///         nbrs.push(n.clone() + Coord::new(0, -1));
+///         nbrs.push(n.clone() + Coord::new(-1, 0));
+///         nbrs.push(n.clone() + Coord::new(1, 0));
+///         
+///         // Wall for x = 5 and y < 20
+///         nbrs.into_iter().filter(|c| c.x != 5 || c.y < 20 ).collect()
+///     }
+/// }
+///
+/// let start = Coord::new(0, 0);
+/// let goal = Coord::new(10, 10);
+/// let my_world = MyWorld {};
+/// let solution = my_world.solve(&start, &goal);
+/// println!("Solution = {:?}", solution);
+/// ```
 pub trait AStar<Node: Clone + Eq + Hash> {
     /// This function should return the heuristic distance between
     /// a node and the goal.
@@ -19,10 +82,10 @@ pub trait AStar<Node: Clone + Eq + Hash> {
     fn distance_between(&self, a: &Node, b: &Node) -> f32;
 
     ///
-    /// This function is called to try to solve the shortest path between
-    /// start and goal.
+    /// Tries to try to solve the shortest path between start and goal.
     ///
-    /// Please see the tests for some simple examples.
+    /// If a path is found, the nodes are returned as Some(nodes) if no path is
+    /// found, None is returned.
     ///
     ///
     fn solve(&self, start: &Node, goal: &Node) -> Option<Vec<Node>> {
