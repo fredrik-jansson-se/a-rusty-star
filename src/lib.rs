@@ -68,7 +68,7 @@ use std::cmp::Ordering;
 /// let goal = Coord::new(10, 10);
 /// let my_world = MyWorld {};
 /// let solution = my_world.solve(&start, &goal);
-/// println!("Solution = {:?}", solution);
+/// assert_eq!(true, solution.is_some());
 /// ```
 pub trait AStar<Node: Clone + Eq + Hash> {
     /// This function should return the heuristic distance between
